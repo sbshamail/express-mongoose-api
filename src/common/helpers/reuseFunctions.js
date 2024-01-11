@@ -1,4 +1,3 @@
-const constants = require('./constants')
 const {Response} = require('./responseHandler')
 
 exports.removeUndefined = (data) => {
@@ -9,11 +8,18 @@ exports.removeUndefined = (data) => {
   }
 };
 
+exports.IsArray=(data,res)=>{
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return Response(res, 400, "Not Found Ids");
+  }
+ }
+
 
 exports.capitalizeFirstLetter = (name) => {
   return name.charAt(0).toUpperCase() + name.slice(1);
 };
 
+//send array and check all is same
 exports.isAllSameinArray = (dataArray) => {
   if (dataArray.length === 0) return false; // or true, based on how you want to treat an empty array
 
@@ -27,11 +33,6 @@ exports.capitalizeCamelSpace = name => {
   return capitalized.replace(/([A-Z])/g, ' $1').trim()
 }
 
-exports.IsArray=(data,res)=>{
-  if (!data || !Array.isArray(data) || data.length === 0) {
-    return Response(res, 400, "Not Found Ids");
-  }
- }
 
 
 

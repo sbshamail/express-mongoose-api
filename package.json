@@ -1,9 +1,11 @@
 {
   "name": "@tablets/express-mongoose-api",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Common functions for Express and Mongoose API",
   "main": "src/index.js",
-  "scripts": {},
+  "scripts": {
+    "mypush": "export VERSION=$(node -p -e \"require('./package.json').version\") && git add . && git commit -m 'Bump version to $VERSION' && git tag v$VERSION && git push origin main && git push origin v$VERSION && npm publish --access public"
+  },
   "keywords": [
     "express",
     "mongoose",
