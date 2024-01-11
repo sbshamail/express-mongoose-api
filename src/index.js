@@ -25,7 +25,7 @@ const {
   lookupStage,
 } = require("./common/controller/aggregation");
 //helper
-const contants = require("./common/helpers/constants");
+const constants = require("./common/helpers/constants");
 const { Response } = require("./common/helpers/responseHandler");
 const {
   handleAsyncSession,
@@ -52,7 +52,7 @@ module.exports = {
   lookupUnwindStage,
   lookupStage,
   // helper function
-  contants,
+  constants,
   Response,
   //handle async
   handleAsyncSession,
