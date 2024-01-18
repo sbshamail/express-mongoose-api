@@ -42,6 +42,10 @@ exports.onlyIntegerAllowed = (res, number) => {
   }
 };
 
+exports.extractArrayItems = (data) =>
+  Object.fromEntries(
+    Object.entries(data).map(([key, value]) => [key, value[0]])
+  );
 
 
  // const oneValueAllowed = (value) => {

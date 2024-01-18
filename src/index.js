@@ -19,6 +19,12 @@ const {
   CreateFormidableHandler,
   UpdateFormidableHandler,
 } = require("./common/controller/formidable");
+
+const {
+  CreateHandleFilesGoogleDrive,
+  UpdateFilesHandleGoogleDrive,
+} = require("./common/controller/googleDrive/main");
+
 const {
   createAggregationPipeline,
   lookupUnwindStage,
@@ -32,7 +38,13 @@ const {
   handleAsync,
 } = require("./common/helpers/handleAsync");
 const { handleError } = require("./common/helpers/errorHandler");
-const { removeUndefined,IsArray,capitalizeFirstLetter,isAllSameinArray,capitalizeCamelSpace } = require("./common/helpers/reuseFunctions");
+const {
+  removeUndefined,
+  IsArray,
+  capitalizeFirstLetter,
+  isAllSameinArray,
+  capitalizeCamelSpace,
+} = require("./common/helpers/reuseFunctions");
 const connectdb = require("./common/db/conn");
 
 module.exports = {
@@ -44,14 +56,19 @@ module.exports = {
   listCommonAggregationFilterize,
   aggregationByIds,
   BulkWriteForFile,
+  // cloudinary
   cloudinaryPushingFiles,
   cloudinaryDeleteFiles,
   CreateFormidableHandler,
   UpdateFormidableHandler,
+  //googledrive
+  CreateHandleFilesGoogleDrive,
+  UpdateFilesHandleGoogleDrive,
+  // aggregation
   createAggregationPipeline,
   lookupUnwindStage,
   lookupStage,
-  // helper function
+  // helper functions
   constants,
   Response,
   //handle async
@@ -66,5 +83,5 @@ module.exports = {
   IsArray,
   capitalizeFirstLetter,
   isAllSameinArray,
-  capitalizeCamelSpace
+  capitalizeCamelSpace,
 };

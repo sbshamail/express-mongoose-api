@@ -52,8 +52,8 @@ exports.listCommonAggregationFilterize = async (
  * @returns {Promise<Object>} 
  */
 
-exports.aggregationByIds=async({model,data,customParams,ownPipeline})=>{
-  const document = data && data?.length? data : [data];
+exports.aggregationByIds=async({model,ids,customParams,ownPipeline})=>{
+  const document = ids && ids?.length? ids : [ids];
   let pipeline;
     if(customParams){
           // @ts-ignore
