@@ -44,6 +44,8 @@ const {
   capitalizeFirstLetter,
   isAllSameinArray,
   capitalizeCamelSpace,
+  extractArrayItems,
+  onlyIntegerAllowed
 } = require("./common/helpers/reuseFunctions");
 const connectdb = require("./common/db/conn");
 
@@ -84,4 +86,6 @@ module.exports = {
   capitalizeFirstLetter,
   isAllSameinArray,
   capitalizeCamelSpace,
+  extractArrayItems,
+  onlyIntegerAllowed
 };
