@@ -1,6 +1,6 @@
 {
   "name": "@tablets/express-mongoose-api",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Common functions for Express and Mongoose API",
   "main": "src/index.js",
   "scripts": {
@@ -8,6 +8,10 @@
   },
   "keywords": [
     "express",
+    "mongoose",
+    "googleapis",
+    "cloudinary",
+    "formidable",
     "mongoose",
     "common",
     "api",
@@ -18,10 +22,5 @@
   "author": "Hamail",
   "license": "ISC",
   "dependencies": {
-    "cloudinary": "^1.41.2",
-    "express": "^4.18.2",
-    "formidable": "^3.5.1",
-    "googleapis": "^131.0.0",
-    "mongoose": "^8.0.4"
   }
 }
