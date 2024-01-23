@@ -46,8 +46,9 @@ const {
   isAllSameinArray,
   capitalizeCamelSpace,
   extractArrayItems,
-  onlyIntegerAllowed
+  onlyIntegerAllowed,
 } = require("./common/helpers/reuseFunctions");
+const { caches, createCache } = require("./common/helpers/node-cache");
 const connectdb = require("./common/db/conn");
 
 module.exports = {
@@ -91,5 +92,8 @@ module.exports = {
   isAllSameinArray,
   capitalizeCamelSpace,
   extractArrayItems,
-  onlyIntegerAllowed
+  onlyIntegerAllowed,
+  // node-cache
+  caches,
+  createCache,
 };
