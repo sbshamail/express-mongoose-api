@@ -7,6 +7,7 @@ const {
   updateManyRecords,
 } = require("./common/controller/update");
 const {
+  listAggregation,
   listCommonAggregationFilterize,
   aggregationByIds,
 } = require("./common/controller/list");
@@ -51,13 +52,16 @@ const connectdb = require("./common/db/conn");
 
 module.exports = {
   removeMany,
+  softRemoveShowStatus,
   createApi,
+  //update
   updateApi,
   updateManyRecords,
-  softRemoveShowStatus,
-  listCommonAggregationFilterize,
-  aggregationByIds,
   BulkWriteForFile,
+  //list
+  listCommonAggregationFilterize,
+  listAggregation,
+  aggregationByIds,
   // cloudinary
   cloudinaryPushingFiles,
   cloudinaryDeleteFiles,

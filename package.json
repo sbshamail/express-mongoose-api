@@ -1,6 +1,6 @@
 {
   "name": "@tablets/express-mongoose-api",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Common functions for Express and Mongoose API",
   "main": "src/index.js",
   "scripts": {
