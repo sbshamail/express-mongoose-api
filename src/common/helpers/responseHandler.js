@@ -15,12 +15,9 @@ exports.Response = (res, code, message, data, total,custom) => {
   if (total !== undefined) {
     Record.total = total;
   }
-  if(custom){
-    Record.custom = custom;
-  }
-
+ 
   // Return the response
-  return res.status(code).json({ ...Record, status, message });
+  return res.status(code).json({ ...Record,...custom, status, message });
   //   return res.status(code).json({ Record,status,message});
 };
 
