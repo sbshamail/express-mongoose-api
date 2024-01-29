@@ -90,6 +90,7 @@ exports.uploadFilesToGoogleDrive = async (authClient, files,foldering) => {
         fileType: driveResponse.data.mimeType,
         fileUrl: driveResponse.data.webViewLink,
         fileName: driveResponse.data.name,
+        url:`https://drive.google.com/uc?id=${driveResponse.data.id}`,
       };
       // console.log(fileInfo);
 
