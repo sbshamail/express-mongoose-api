@@ -25,20 +25,16 @@ exports.updateManyRecords = async ({
   );
 };
 
-exports.softRemoveShowStatus = async ({ req, res, model, status }) => {
+exports.updateMany = async ({ req, res, model, status }) => {
   try {
-    const ids = req.body.ids;
+    const data = req.body;
+    const { ids, ...updateData } = data;
+
     IsArray(ids, res);
-    const response = await model.updateMany(
-      { _id: { $in: ids } },
-      { show: status },
-      { new: true }
-    );
-    if (status == false) {
-      return Response(res, 200, constants.DELETE_SUCCESS);
-    } else if (status == true) {
-      return Response(res, 200, constants.UNDO_SUCCESS);
-    }
+    const response = await model.updateMany({ _id: { $in: ids } }, updateData, {
+      new: true,
+    });
+    return response;
   } catch (error) {
     console.log(model.modelName, error);
     Response(res, 500, constants.GET_ERROR);
