@@ -29,7 +29,9 @@ exports.updateMany = async ({ req, res, model, status }) => {
   try {
     const data = req.body;
     const { ids, ...updateData } = data;
-
+    if (!updateData) {
+      return Response(res,400,"No data Found For Update")
+     }
     IsArray(ids, res);
     const response = await model.updateMany({ _id: { $in: ids } }, updateData, {
       new: true,
