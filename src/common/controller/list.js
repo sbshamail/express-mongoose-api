@@ -11,6 +11,9 @@ exports.listCommonAggregationFilterize = async (
 ) => {
   try {
     const { searchTerm, sortField, columnFilters, deleted } = req.query;
+    if (deleted) {
+      deleted = JSON.parse(deleted);
+    }
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
     if (columnFilters) {
