@@ -31,7 +31,7 @@ exports.listCommonAggregationFilterize = async (
       sortField: sortField ? sortField : "createdAt",
       sortOrder: sortOrder ? sortOrder : 1,
       columnFilters: columnFiltersArray,
-      softRemove,
+      deleted:softRemove,
       customParams,
     });
     // @ts-ignore
