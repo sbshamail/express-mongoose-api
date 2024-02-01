@@ -25,7 +25,13 @@ exports.updateManyRecords = async ({
   );
 };
 
-exports.updateMany = async ({ req, res, model, status }) => {
+/**
+ * @param {Object} args 
+ * @param {import('express').Request} args.req
+ * @param {import('express').Response} args.res 
+ * @param {import('mongoose').Model} args.model 
+ */
+exports.updateMany = async ({ req, res, model }) => {
   try {
     const data = req.body;
     const { ids, ...updateData } = data;
