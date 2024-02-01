@@ -3,6 +3,7 @@ const { removeMany } = require("./common/controller/remove");
 const { createApi } = require("./common/controller/create");
 const {
   updateApi,
+  updateMany,
   softRemoveShowStatus,
   updateManyRecords,
 } = require("./common/controller/update");
@@ -59,6 +60,7 @@ module.exports = {
   updateApi,
   updateManyRecords,
   BulkWriteForFile,
+  updateMany,
   //list
   listCommonAggregationFilterize,
   listAggregation,
