@@ -64,14 +64,14 @@ exports.UpdateFilesHandleGoogleDrive = async (req, res, model, data) => {
   let foldering = data.foldering;
   let files = req.files;
   // allowed files is int schema methods check the allowed files
-  if (files && files.length > 0 && model.allowedFiles) {
-    try {
-      model.allowedFiles(files);
-    } catch (error) {
-      // console.error(error.message);
-      return Response(res, 400, error.message);
-    }
-  }
+  // if (files && files.length > 0 && model.allowedFiles) {
+  //   try {
+  //     model.allowedFiles(files);
+  //   } catch (error) {
+  //     // console.error(error.message);
+  //     return Response(res, 400, error.message);
+  //   }
+  // }
 
   try {
     // Upload files to Google Drive
