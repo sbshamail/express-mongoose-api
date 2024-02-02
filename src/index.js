@@ -3,9 +3,10 @@ const { removeMany } = require("./common/controller/remove");
 const { createApi } = require("./common/controller/create");
 const {
   updateApi,
-  updateMany,
+  updateManyByIds,
   softRemoveShowStatus,
   updateManyRecords,
+  updateAddNewField
 } = require("./common/controller/update");
 const {
   listAggregation,
@@ -60,7 +61,8 @@ module.exports = {
   updateApi,
   updateManyRecords,
   BulkWriteForFile,
-  updateMany,
+  updateManyByIds,
+  updateAddNewField,
   //list
   listCommonAggregationFilterize,
   listAggregation,
