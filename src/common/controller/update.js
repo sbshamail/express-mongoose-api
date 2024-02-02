@@ -53,9 +53,7 @@ exports.updateAddNewField = async ({model, data}) => {
   try {
     await model.updateMany({}, { $set: data }, { new: true });
     console.log(`${model} documents updated successfully.`);
-    return Response(res, 400, "Existing documents updated successfully.");
   } catch (error) {
     console.error(`${model} Error updating existing documents:`, error);
-    return Response(res, 400, "Error updating existing documents:");
   }
 };
