@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { removeUndefined, IsArray } = require("../helpers/reuseFunctions");
 const { Response } = require("../helpers/responseHandler");
 const constants = require("../helpers/constants");
@@ -31,9 +32,10 @@ exports.updateManyRecords = async ({
  * @param {import('express').Response} args.res
  * @param {import('mongoose').Model} args.model
  */
-exports.updateManyByIds = async ({ req, res, model }) => {
+exports.updateManyByIds = async ({ req, res }) => {
   try {
-    const data = req.body;
+    const { data, modelName } = req.body;
+    const model = mongoose.model(modelName);
     const { ids, ...updateData } = data;
     if (!updateData) {
       return Response(res, 400, "No data Found For Update");
@@ -42,18 +44,18 @@ exports.updateManyByIds = async ({ req, res, model }) => {
     const response = await model.updateMany({ _id: { $in: ids } }, updateData, {
       new: true,
     });
-    return response;
+    if (response) {
+      return Response(res, 200, "Deleted Successfully");
+    }
   } catch (error) {
     console.log(model.modelName, error);
     Response(res, 400, constants.GET_ERROR);
   }
 };
 
-exports.updateAddNewField = async ({model, data}) => {
-  try {
-    await model.updateMany({}, { $set: data }, { new: true });
-    console.log(`${model} documents updated successfully.`);
-  } catch (error) {
-    console.error(`${model} Error updating existing documents:`, error);
-  }
+exports.updateFieldAll = async (req, res) => {
+  const { name } = req.body;
+  const model = mongoose.model(name);
+  await model.updateMany({}, { $set: { deleted: false } });
+  res.status(200).send(`${name} Documents updated successfully.`);
 };
