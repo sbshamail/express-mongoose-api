@@ -26,18 +26,18 @@ exports.updateManyRecords = async ({
 };
 
 /**
- * @param {Object} args 
+ * @param {Object} args
  * @param {import('express').Request} args.req
- * @param {import('express').Response} args.res 
- * @param {import('mongoose').Model} args.model 
+ * @param {import('express').Response} args.res
+ * @param {import('mongoose').Model} args.model
  */
-exports.updateMany = async ({ req, res, model }) => {
+exports.updateManyByIds = async ({ req, res, model }) => {
   try {
     const data = req.body;
     const { ids, ...updateData } = data;
     if (!updateData) {
-      return Response(res,400,"No data Found For Update")
-     }
+      return Response(res, 400, "No data Found For Update");
+    }
     IsArray(ids, res);
     const response = await model.updateMany({ _id: { $in: ids } }, updateData, {
       new: true,
@@ -46,5 +46,14 @@ exports.updateMany = async ({ req, res, model }) => {
   } catch (error) {
     console.log(model.modelName, error);
     Response(res, 500, constants.GET_ERROR);
+  }
+};
+
+exports.updateAddNewField = async ({model, data}) => {
+  try {
+    await model.updateMany({}, { $set: data }, { new: true });
+    console.log(`${model} documents updated successfully.`);
+  } catch (error) {
+    console.error(`${model} Error updating existing documents:`, error);
   }
 };
