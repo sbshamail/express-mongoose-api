@@ -12,6 +12,7 @@ exports.listCommonAggregationFilterize = async (
   try {
     const { searchTerm, sortField, columnFilters, deleted } = req.query;
     let softRemove;
+    console.log(deleted)
     if (deleted) {
       softRemove = JSON.parse(deleted);
     }

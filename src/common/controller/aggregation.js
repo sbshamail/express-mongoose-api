@@ -38,7 +38,6 @@ exports.createAggregationPipeline = ({
   deleted=false,
   sortField = "createdAt",
   sortOrder = -1,
-  showRemove = false,
   ids=[],
   customParams,
 }) => {
@@ -52,7 +51,7 @@ exports.createAggregationPipeline = ({
   };
   let matchStage = {};
 
-  if (searchTerm || columnFilters.length > 0) {
+  // if (searchTerm || columnFilters.length > 0) {
     // const numericSearchTerm = Number(searchTerm);
     matchStage = {
       ...(searchTerm && {
@@ -80,7 +79,7 @@ exports.createAggregationPipeline = ({
       }),
       deleted: deleted
     };
-  }
+  // }
 
   // data
   let dataPipeline = [];
