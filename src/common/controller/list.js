@@ -12,11 +12,9 @@ exports.listCommonAggregationFilterize = async (
   try {
     const { searchTerm, sortField, columnFilters, deleted } = req.query;
     let softRemove;
-    console.log(deleted)
     if (deleted) {
       softRemove = JSON.parse(deleted);
     }
-    console.log(softRemove)
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
     if (columnFilters) {
