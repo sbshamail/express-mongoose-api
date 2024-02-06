@@ -35,6 +35,7 @@ exports.createAggregationPipeline = ({
   limit = 100,
   searchTerm = "",
   columnFilters = [],
+  deleted=false,
   sortField = "createdAt",
   sortOrder = -1,
   showRemove = false,
@@ -77,6 +78,7 @@ exports.createAggregationPipeline = ({
           [column.id]: { $regex: column.value, $options: "i" },
         })),
       }),
+      deleted: deleted
     };
   }
 
