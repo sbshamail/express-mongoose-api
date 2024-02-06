@@ -1,4 +1,4 @@
-const { removeUndefined, IsArray } = require("../helpers/reuseFunctions");
+const { removeUndefined } = require("../helpers/reuseFunctions");
 const { Response } = require("../helpers/responseHandler");
 const constants = require("../helpers/constants");
 
@@ -38,7 +38,9 @@ exports.updateManyByIds = async ({ req, res, model }) => {
     if (!updateData) {
       return Response(res, 400, "No data Found For Update");
     }
-    IsArray(ids, res);
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return Response(res, 400, "Not Found Ids");
+    }
     const response = await model.updateMany({ _id: { $in: ids } }, updateData, {
       new: true,
     });

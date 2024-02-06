@@ -1,5 +1,4 @@
 const {Response} = require('../helpers/responseHandler')
-const {IsArray} = require("../helpers/reuseFunctions")
 const constants = require('../helpers/constants')
 
 exports.removeMany = async (req,res, model) => {
