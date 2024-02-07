@@ -77,7 +77,8 @@ exports.createAggregationPipeline = ({
           [column.id]: { $regex: column.value, $options: "i" },
         })),
       }),
-      deleted: deleted
+      deleted:deleted,
+      
     };
   // }
 

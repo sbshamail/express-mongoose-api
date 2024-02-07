@@ -55,7 +55,7 @@ exports.listAggregation = async (
   customParams
 ) => {
   try {
-    const { searchTerm, sortField, columnFilters, showRemove } = req.query;
+    const { searchTerm, sortField, columnFilters, deleted } = req.query;
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
     if (columnFilters) {
@@ -71,7 +71,7 @@ exports.listAggregation = async (
       sortField: sortField ? sortField : "createdAt",
       sortOrder: sortOrder ? sortOrder : 1,
       columnFilters: columnFiltersArray,
-      showRemove,
+      deleted,
       customParams,
     });
     // @ts-ignore
