@@ -112,12 +112,12 @@ exports.createAggregationPipeline = ({
   if (lookup) {
     dataPipeline = dataPipeline.concat(...lookup);
   }
-
+  let countPipeline = [{ $match: matchStage }, { $count: "count" }];
   return [
     {
       $facet: {
-        total: [{ $count: "count" }],
-
+        totalAll: [{ $count: "count" }],
+        total: countPipeline,
         data: dataPipeline,
       },
     },

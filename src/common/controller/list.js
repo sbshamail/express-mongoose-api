@@ -11,11 +11,6 @@ exports.listCommonAggregationFilterize = async (
 ) => {
   try {
     const { searchTerm, sortField, columnFilters, deleted,branch } = req.query;
-    let softRemove;
-    // if (deleted) {
-    //   softRemove = JSON.parse(deleted);
-    // }
-  
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
     if (columnFilters) {
@@ -99,18 +94,18 @@ exports.listAggregation = async (
  * @returns {Promise<Object>}
  */
 
-exports.aggregationByIds = async ({
-  model,
-  ids,
-  customParams,
-  ownPipeline,
-  branch,
-}) => {
+exports.aggregationByIds = async ({ model, ids, customParams, ownPipeline,req }) => {
+  // find id required branch and ids
+  const user = req.user;
   const document = ids && ids?.length ? ids : [ids];
   let pipeline;
   if (customParams) {
     // @ts-ignore
-    pipeline = createAggregationPipeline({ ids: document, customParams,branch });
+    pipeline = createAggregationPipeline({
+      ids: document,
+      customParams,
+      branch: req.body.branch ?? user.branch._id,
+    });
   } else if (ownPipeline) {
     // @ts-ignore
     pipeline = ownPipeline({ ids: document });
