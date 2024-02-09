@@ -104,12 +104,13 @@ exports.aggregationByIds = async ({
   ids,
   customParams,
   ownPipeline,
+  branch,
 }) => {
   const document = ids && ids?.length ? ids : [ids];
   let pipeline;
   if (customParams) {
     // @ts-ignore
-    pipeline = createAggregationPipeline({ ids: document, customParams });
+    pipeline = createAggregationPipeline({ ids: document, customParams,branch });
   } else if (ownPipeline) {
     // @ts-ignore
     pipeline = ownPipeline({ ids: document });
