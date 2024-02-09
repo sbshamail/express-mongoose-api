@@ -85,7 +85,7 @@ exports.createAggregationPipeline = ({
     matchStage.$or = matchStage.$or || [];
     matchStage.$or.push(
       { branch: new mongoose.Types.ObjectId(branch) },
-      { branch: branch }
+      { "branch._id": branch }
     );
   }
   // data
