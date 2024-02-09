@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 exports.lookupUnwindStage = (from, localField, foreignField, as) => {
   return [
@@ -35,14 +35,15 @@ exports.createAggregationPipeline = ({
   limit = 100,
   searchTerm = "",
   columnFilters = [],
-  deleted=false,
+  deleted = "false",
   sortField = "createdAt",
   sortOrder = -1,
-  ids=[],
+  ids = [],
   customParams,
+  branch = "65c336d6355c2fc50b106bd0", // it is fake id, without branch id it does not work
 }) => {
   const { projectionFields, searchTerms, numericSearchTerms } = customParams;
-  
+
   const lookup = customParams.lookup ? customParams.lookup : [];
   const searching = (field) => {
     return {
@@ -52,41 +53,44 @@ exports.createAggregationPipeline = ({
   let matchStage = {};
 
   // if (searchTerm || columnFilters.length > 0) {
-    // const numericSearchTerm = Number(searchTerm);
-    matchStage = {
-      ...(searchTerm && {
-        $or: [
-          ...(numericSearchTerms.length > 0
-            ? numericSearchTerms.map((search) => {
-                console.log(search);
-                const condition = {};
-                condition[search] = Number(searchTerm);
-                return condition;
-              })
-            : []),
+  // const numericSearchTerm = Number(searchTerm);
+  matchStage = {
+    ...(searchTerm && {
+      $or: [
+        ...(numericSearchTerms.length > 0
+          ? numericSearchTerms.map((search) => {
+              console.log(search);
+              const condition = {};
+              condition[search] = Number(searchTerm);
+              return condition;
+            })
+          : []),
 
-          ...(searchTerms.length > 0
-            ? searchTerms.map((search) => {
-                return searching(search);
-              })
-            : []),
-        ],
-      }),
-      ...(columnFilters.length > 0 && {
-        $and: columnFilters.map((column) => ({
-          [column.id]: { $regex: column.value, $options: "i" },
-        })),
-      }),
-      deleted:deleted,
-      
-    };
+        ...(searchTerms.length > 0
+          ? searchTerms.map((search) => {
+              return searching(search);
+            })
+          : []),
+      ],
+    }),
+    ...(columnFilters.length > 0 && {
+      $and: columnFilters.map((column) => ({
+        [column.id]: { $regex: column.value, $options: "i" },
+      })),
+    }),
+    deleted: deleted,
+  };
   // }
-
+  if (branch) {
+    matchStage.$or = matchStage.$or || [];
+    matchStage.$or.push(
+      { branch: new mongoose.Types.ObjectId(branch) },
+      { branch: branch }
+    );
+  }
   // data
   let dataPipeline = [];
-  if (lookup) {
-    dataPipeline = dataPipeline.concat(...lookup);
-  }
+
   dataPipeline = dataPipeline.concat([
     { $match: matchStage },
     // { $match: { show: { $ne: showRemove } } },
@@ -105,6 +109,9 @@ exports.createAggregationPipeline = ({
     { $skip: skip },
     { $limit: limit },
   ]);
+  if (lookup) {
+    dataPipeline = dataPipeline.concat(...lookup);
+  }
 
   return [
     {
@@ -118,3 +125,5 @@ exports.createAggregationPipeline = ({
     { $project: { total: "$total.count", data: "$data" } },
   ];
 };
+
+

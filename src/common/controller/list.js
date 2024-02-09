@@ -10,7 +10,7 @@ exports.listCommonAggregationFilterize = async (
   customParams
 ) => {
   try {
-    const { searchTerm, sortField, columnFilters, deleted } = req.query;
+    const { searchTerm, sortField, columnFilters, deleted,branch } = req.query;
     let softRemove;
     // if (deleted) {
     //   softRemove = JSON.parse(deleted);
@@ -33,6 +33,7 @@ exports.listCommonAggregationFilterize = async (
       columnFilters: columnFiltersArray,
       deleted:deleted,
       customParams,
+      branch
     });
     // @ts-ignore
     const result = await model.aggregate(pipeline);
@@ -55,7 +56,7 @@ exports.listAggregation = async (
   customParams
 ) => {
   try {
-    const { searchTerm, sortField, columnFilters, deleted } = req.query;
+    const { searchTerm, sortField, columnFilters, deleted,branch } = req.query;
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
     if (columnFilters) {
@@ -73,6 +74,7 @@ exports.listAggregation = async (
       columnFilters: columnFiltersArray,
       deleted,
       customParams,
+      branch
     });
     // @ts-ignore
     const result = await model.aggregate(pipeline);
