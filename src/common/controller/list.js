@@ -10,7 +10,11 @@ exports.listCommonAggregationFilterize = async (
   customParams
 ) => {
   try {
-    const { searchTerm, sortField, columnFilters, deleted,branch } = req.query;
+    const { searchTerm, sortField, columnFilters, deleted } = req.query;
+    const { branch } = req.user;
+    if (!branch || !branch._id) {
+      return;
+    }
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
     if (columnFilters) {
@@ -26,9 +30,9 @@ exports.listCommonAggregationFilterize = async (
       sortField: sortField ? sortField : "createdAt",
       sortOrder: sortOrder ? sortOrder : 1,
       columnFilters: columnFiltersArray,
-      deleted:deleted,
+      deleted: deleted,
       customParams,
-      branch
+      branch: branch._id,
     });
     // @ts-ignore
     const result = await model.aggregate(pipeline);
@@ -51,7 +55,11 @@ exports.listAggregation = async (
   customParams
 ) => {
   try {
-    const { searchTerm, sortField, columnFilters, deleted,branch } = req.query;
+    const { searchTerm, sortField, columnFilters, deleted } = req.query;
+    const { branch } = req.user;
+    if (!branch || !branch._id) {
+      return;
+    }
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
     if (columnFilters) {
@@ -69,7 +77,7 @@ exports.listAggregation = async (
       columnFilters: columnFiltersArray,
       deleted,
       customParams,
-      branch
+      branch: branch._id,
     });
     // @ts-ignore
     const result = await model.aggregate(pipeline);
@@ -94,7 +102,13 @@ exports.listAggregation = async (
  * @returns {Promise<Object>}
  */
 
-exports.aggregationByIds = async ({ model, ids, customParams, ownPipeline,req }) => {
+exports.aggregationByIds = async ({
+  model,
+  ids,
+  customParams,
+  ownPipeline,
+  req,
+}) => {
   // find id required branch and ids
   const user = req.user;
   const document = ids && ids?.length ? ids : [ids];
