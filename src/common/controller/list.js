@@ -122,7 +122,7 @@ exports.aggregationByIds = async ({
     });
   } else if (ownPipeline) {
     // @ts-ignore
-    pipeline = ownPipeline({ ids: document });
+    pipeline = ownPipeline({ ids: document,branch: req.body.branch ?? user.branch._id, });
   }
 
   // @ts-ignore
