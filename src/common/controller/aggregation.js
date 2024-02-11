@@ -90,10 +90,11 @@ exports.createAggregationPipeline = ({
   }
   // data
   let dataPipeline = [];
-
+  if (lookup) {
+    dataPipeline = dataPipeline.concat(...lookup);
+  }
   dataPipeline = dataPipeline.concat([
     { $match: matchStage },
-    // { $match: { show: { $ne: showRemove } } },
     {
       $match: {
         _id:
@@ -109,9 +110,7 @@ exports.createAggregationPipeline = ({
     { $skip: skip },
     { $limit: limit },
   ]);
-  if (lookup) {
-    dataPipeline = dataPipeline.concat(...lookup);
-  }
+ 
   let countPipeline = [{ $match: matchStage }, { $count: "count" }];
   return [
     {
