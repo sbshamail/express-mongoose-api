@@ -87,8 +87,7 @@ exports.UpdateFilesHandleGoogleDrive = async (req, res, model, data) => {
 
     let deletedFiles;
     if (data.deletedFiles && data.deletedFiles.length > 0) {
-      deletedFiles = JSON.parse(data.deletedFiles);
-      // const deleteFilesResponse = await cloudinaryDeleteFiles(deletedFiles);
+      // deletedFiles = JSON.parse(data.deletedFiles);
       const deleteFilesResponse = await removeFilesFromGoogleDrive(
         authClient,
         deletedFiles
