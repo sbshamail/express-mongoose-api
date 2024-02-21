@@ -80,11 +80,10 @@ exports.createAggregationPipeline = ({
     ...(columnFilters.length > 0 && {
       $and: columnFilters.map(column => {
         const condition = {};
-        if (!isNaN(Number(column.value))) {
-          // If the column value is numeric, use numeric comparison
+        const alwaysTreatAsString = searchTerms; // Add field identifiers here
+        if (!isNaN(Number(column.value)) && numericSearchTerms && numericSearchTerms.includes(column.id)) {
           condition[column.id] = Number(column.value);
         } else {
-          // If not numeric, use regex for string comparison
           condition[column.id] = { $regex: column.value, $options: 'i' };
         }
         return condition;
