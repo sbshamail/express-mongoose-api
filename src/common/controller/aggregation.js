@@ -101,13 +101,13 @@ exports.createAggregationPipeline = ({
     matchStage.$and = matchStage.$and || [];
     if (mongoose.Types.ObjectId.isValid(branch)) {
       matchStage.$and.push({
-        branch: new mongoose.Types.ObjectId(branch)
+        $or:[{branch: new mongoose.Types.ObjectId(branch)},{ 'branch._id': branch}]
       });
     } else {
+      matchStage.$and.push({
+        'branch._id': branch
+      });
     }
-    matchStage.$and.push({
-      'branch._id': branch
-    });
   }
   // data
   let dataPipeline = [];
