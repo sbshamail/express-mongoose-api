@@ -77,35 +77,44 @@ exports.createAggregationPipeline = ({
     //     [column.id]: { $regex: column.value, $options: "i" },
     //   })),
     // }),
-    ...(columnFilters.length > 0 && {
-      $and: columnFilters.map(column => {
-        const condition = {};
-        const alwaysTreatAsString = searchTerms; // Add field identifiers here
-        if (!isNaN(Number(column.value)) && numericSearchTerms && numericSearchTerms.includes(column.id)) {
-          condition[column.id] = Number(column.value);
-        } else {
-          condition[column.id] = { $regex: column.value, $options: 'i' };
-        }
-        return condition;
-      })
-    }),
+    ...(columnFilters &&
+      columnFilters.length > 0 && {
+        $and: columnFilters.map(column => {
+          const condition = {};
+          const alwaysTreatAsString = searchTerms; // Add field identifiers here
+          if (
+            !isNaN(Number(column.value)) &&
+            numericSearchTerms &&
+            numericSearchTerms.includes(column.id)
+          ) {
+            condition[column.id] = Number(column.value);
+          } else {
+            condition[column.id] = { $regex: column.value, $options: 'i' };
+          }
+          return condition;
+        })
+      }),
     deleted: deleted
   };
 
   if (branch) {
-    matchStage.$and = matchStage.$and || []; // Using $and instead of $or to combine conditions
+    matchStage.$and = matchStage.$and || [];
+    if (mongoose.Types.ObjectId.isValid(branch)) {
+      matchStage.$and.push({
+        branch: new mongoose.Types.ObjectId(branch)
+      });
+    } else {
+    }
     matchStage.$and.push({
-      $or: [{ branch: new mongoose.Types.ObjectId(branch) }, { 'branch._id': branch }]
+      'branch._id': branch
     });
   }
-
   // data
   let dataPipeline = [];
 
   if (lookup) {
     dataPipeline = dataPipeline.concat(...lookup);
   }
-
   dataPipeline = dataPipeline.concat([
     { $match: matchStage },
     {
@@ -130,13 +139,12 @@ exports.createAggregationPipeline = ({
       $facet: {
         totalAll: [{ $count: 'count' }],
         data: dataPipeline,
-        total: countPipeline,
+        total: countPipeline
       }
     },
     { $unwind: '$total' },
     { $project: { total: '$total.count', data: '$data' } }
   ];
 };
-
 
 
