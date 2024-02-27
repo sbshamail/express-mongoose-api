@@ -34,11 +34,11 @@ exports.capitalizeCamelSpace = name => {
 }
 
 // only integer allowed
-exports.onlyIntegerAllowed = (res, number) => {
+exports.onlyIntegerAllowed = (number) => {
   if (number !== undefined && /^\d+$/.test(number)) {
     return (number = Number(number));
   } else {
-    return Response(res, 400, "Missing or contains non-numeric characters");
+    return {error:"Missing or contains non-numeric characters"}
   }
 };
 
