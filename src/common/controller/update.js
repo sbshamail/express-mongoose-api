@@ -2,12 +2,12 @@ const { removeUndefined } = require("../helpers/reuseFunctions");
 const { Response } = require("../helpers/responseHandler");
 const constants = require("../helpers/constants");
 
-exports.updateApi = async (model, id, data) => {
+exports.updateApi = async (model, id, data, options = {}) => {
   removeUndefined(data);
-  const response = await model.findByIdAndUpdate({ _id: id }, data, {
+  const response = await model.findByIdAndUpdate(id, data, {
     new: true,
+    ...options  // Spread the options object here
   });
-
   return response;
 };
 

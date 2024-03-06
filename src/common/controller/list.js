@@ -99,6 +99,8 @@ exports.listAggregation = async (
  * @param {Object} options.customParams - The data to set in the update.
  * @param {Object} options.ids
  * @param {Function} [options.ownPipeline] - Optional MongoDB session.
+ * @param {Request} options.req - Optional MongoDB session.
+ * @param {Function} [options.session]
  * @returns {Promise<Object>}
  */
 
@@ -108,6 +110,7 @@ exports.aggregationByIds = async ({
   customParams,
   ownPipeline,
   req,
+  session = null
 }) => {
   // find id required branch and ids
   const user = req.user;
@@ -126,7 +129,13 @@ exports.aggregationByIds = async ({
   }
 
   // @ts-ignore
-  const aggregateResult = await model.aggregate(pipeline);
+  let aggregateResult
+  if (session) {
+    aggregateResult = await model.aggregate(pipeline).session(session)
+  } else {
+    aggregateResult = await model.aggregate(pipeline)
+  }
   const response = aggregateResult.length > 0 ? aggregateResult[0].data : [];
   return response;
 };
+
