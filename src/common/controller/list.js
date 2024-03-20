@@ -1,7 +1,6 @@
-const constants = require('../helpers/constants')
-const { Response } = require('../helpers/responseHandler')
-const { createAggregationPipeline } = require('./aggregation')
-
+const constants = require("../helpers/constants");
+const { Response } = require("../helpers/responseHandler");
+const { createAggregationPipeline } = require("./aggregation");
 
 exports.listCommonAggregationFilterize = async (
   req,
@@ -11,47 +10,48 @@ exports.listCommonAggregationFilterize = async (
   customParams
 ) => {
   try {
-    const { searchTerm, sortField, columnFilters, deleted } = req.query
-    const { branch } = req.user
+    const { searchTerm, sortField, columnFilters, deleted } = req.query;
+    const { branch } = req.user;
     if (!branch || !branch._id) {
-      return
+      return;
     }
-    let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1
-    let columnFiltersArray = []
+    let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
+    let columnFiltersArray = [];
     if (columnFilters) {
-      columnFiltersArray = JSON.parse(columnFilters)
+      columnFiltersArray = JSON.parse(columnFilters);
     }
-    let limit = req.query?.limit ? parseInt(req.query?.limit) : 20
-    let page = req.query?.page ? parseInt(req.query?.page) : 1
-    let skip = (page - 1) * limit
+    let limit = req.query?.limit ? parseInt(req.query?.limit) : 20;
+    let page = req.query?.page ? parseInt(req.query?.page) : 1;
+    page === 0 ? (page = 1) : (page = page);
+    let skip = (page - 1) * limit;
     const pipeline = createAggregationPipeline({
       skip,
       limit,
       searchTerm,
-      sortField: sortField ? sortField : 'createdAt',
+      sortField: sortField ? sortField : "createdAt",
       sortOrder: sortOrder ? sortOrder : 1,
       columnFilters: columnFiltersArray,
       deleted: deleted,
       customParams,
-      branch: branch._id
-    })
+      branch: branch._id,
+    });
     // @ts-ignore
-    const result = await model.aggregate(pipeline)
+    const result = await model.aggregate(pipeline);
 
-    const total = result.length > 0 ? result[0].total : 0
-    const data = result.length > 0 ? result[0].data : []
+    const total = result.length > 0 ? result[0].total : 0;
+    const data = result.length > 0 ? result[0].data : [];
 
-    Response(res, 200, 'ok', data, total)
+    Response(res, 200, "ok", data, total);
   } catch (error) {
-    console.log(model.modelName, error)
-    Response(res, 400, constants.GET_ERROR)
+    console.log(model.modelName, error);
+    Response(res, 400, constants.GET_ERROR);
   }
-}
+};
 
 function addRowNumbers(data, pageNumber, pageSize) {
   return data.map((item, index) => ({
     ...item,
-    rowNum: (pageNumber - 1) * pageSize + index + 1
+    rowNum: (pageNumber - 1) * pageSize + index + 1,
   }));
 }
 
@@ -63,49 +63,49 @@ exports.listAggregation = async (
   customParams
 ) => {
   try {
-    const { searchTerm, sortField, columnFilters, deleted } = req.query
-    const { branch } = req.user
- 
+    const { searchTerm, sortField, columnFilters, deleted } = req.query;
+    const { branch } = req.user;
+
     if (!branch || !branch._id) {
-      return
+      return;
     }
-    let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1
-    let columnFiltersArray = []
+    let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
+    let columnFiltersArray = [];
     if (columnFilters) {
-      columnFiltersArray = JSON.parse(columnFilters)
+      columnFiltersArray = JSON.parse(columnFilters);
     }
-    let limit = req.query?.limit ? parseInt(req.query?.limit) : 20
-    let page = req.query?.page ? parseInt(req.query?.page) : 1
-    let skip = (page - 1) * limit
+    let limit = req.query?.limit ? parseInt(req.query?.limit) : 20;
+    let page = req.query?.page ? parseInt(req.query?.page) : 1;
+    page === 0 ? (page = 1) : (page = page);
+    let skip = (page - 1) * limit;
     const pipeline = createAggregationPipeline({
       skip,
       limit,
       searchTerm,
-      sortField: sortField ? sortField : 'createdAt',
+      sortField: sortField ? sortField : "createdAt",
       sortOrder: sortOrder ? sortOrder : 1,
       columnFilters: columnFiltersArray,
       deleted,
       customParams,
-      branch: branch._id
-    })
+      branch: branch._id,
+    });
     // @ts-ignore
-    const result = await model.aggregate(pipeline)
+    const result = await model.aggregate(pipeline);
 
-    const total = result.length > 0 ? result[0].total : 0
-    const data = result.length > 0 ? result[0].data : []
+    const total = result.length > 0 ? result[0].total : 0;
+    const data = result.length > 0 ? result[0].data : [];
     const dataWithRowNumbers = addRowNumbers(data, page, limit);
-
 
     return {
       total: total,
-      data: dataWithRowNumbers
+      data: dataWithRowNumbers,
     };
     // return { total, data }
   } catch (error) {
-    console.log(model.modelName, error)
-    Response(res, 400, constants.GET_ERROR)
+    console.log(model.modelName, error);
+    Response(res, 400, constants.GET_ERROR);
   }
-}
+};
 
 /**
  * Perform a bulk write operation for a file.
@@ -125,7 +125,7 @@ exports.aggregationByIds = async ({
   customParams,
   ownPipeline,
   req,
-  session = null
+  session = null,
 }) => {
   // find id required branch and ids
   const user = req.user;
@@ -140,17 +140,19 @@ exports.aggregationByIds = async ({
     });
   } else if (ownPipeline) {
     // @ts-ignore
-    pipeline = ownPipeline({ ids: document,branch: req.body.branch ?? user.branch._id, });
+    pipeline = ownPipeline({
+      ids: document,
+      branch: req.body.branch ?? user.branch._id,
+    });
   }
 
   // @ts-ignore
-  let aggregateResult
+  let aggregateResult;
   if (session) {
-    aggregateResult = await model.aggregate(pipeline).session(session)
+    aggregateResult = await model.aggregate(pipeline).session(session);
   } else {
-    aggregateResult = await model.aggregate(pipeline)
+    aggregateResult = await model.aggregate(pipeline);
   }
   const response = aggregateResult.length > 0 ? aggregateResult[0].data : [];
   return response;
 };
-
