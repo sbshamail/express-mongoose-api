@@ -2,6 +2,7 @@ const constants = require('../helpers/constants')
 const { Response } = require('../helpers/responseHandler')
 const { createAggregationPipeline } = require('./aggregation')
 
+
 exports.listCommonAggregationFilterize = async (
   req,
   res,
@@ -47,6 +48,13 @@ exports.listCommonAggregationFilterize = async (
   }
 }
 
+function addRowNumbers(data, pageNumber, pageSize) {
+  return data.map((item, index) => ({
+    ...item,
+    rowNum: (pageNumber - 1) * pageSize + index + 1
+  }));
+}
+
 exports.listAggregation = async (
   req,
   res,
@@ -85,7 +93,14 @@ exports.listAggregation = async (
 
     const total = result.length > 0 ? result[0].total : 0
     const data = result.length > 0 ? result[0].data : []
-    return { total, data }
+    const dataWithRowNumbers = addRowNumbers(data, page, limit);
+
+
+    return {
+      total: total,
+      data: dataWithRowNumbers
+    };
+    // return { total, data }
   } catch (error) {
     console.log(model.modelName, error)
     Response(res, 400, constants.GET_ERROR)
