@@ -1,6 +1,6 @@
 {
   "name": "@tablets/express-mongoose-api",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "description": "Common functions for Express and Mongoose API",
   "main": "src/index.js",
   "scripts": {
@@ -22,6 +22,5 @@
   "author": "Hamail",
   "license": "ISC",
   "dependencies": {
-    "@tablets/express-mongoose-api": "^1.2.0"
   }
 }

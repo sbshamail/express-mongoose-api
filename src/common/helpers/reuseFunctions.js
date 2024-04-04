@@ -47,18 +47,25 @@ exports.parseDate = dateString => {
   // Add ISO 8601 format and more date formats as needed
   const formats = [
     moment.ISO_8601,
-    'DD-MM-YYYY',
     'DD/MM/YYYY',
+    'D/M/YYYY',
+    'DD/M/YYYY',
+    'D/MM/YYYY',
+    'DD-MM-YYYY',
     'DD-M-YYYY',
     'D-MM-YYYY',
     'D-M-YYYY',
-    'D/M/YYYY'
+
+    // 'MM/DD/YYYY',
+    // 'M/D/YYYY',
+    // 'M/DD/YYYY',
+    // 'MM/D/YYYY',
   ];
 
   const parsedDate = moment(dateString, formats, true);
   if (!parsedDate.isValid()) {
     console.log("Invalid Date Format");
-    return null; // Return null if the date is invalid
+    return ""; // Return null if the date is invalid
   }
 
   return parsedDate.toDate();
