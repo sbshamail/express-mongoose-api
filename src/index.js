@@ -1,7 +1,7 @@
 //controller -api
 const { removeMany } = require('./common/controller/remove');
 const { createApi } = require('./common/controller/create');
-//
+
 const {
   updateApi,
   updateManyByIds,
@@ -52,7 +52,13 @@ const {
   parseDate,
   consoled
 } = require('./common/helpers/reuseFunctions');
-const { caches, createCache } = require('./common/helpers/node-cache');
+const {
+  caches,
+  clearCache,
+  createCache,
+  removeCacheEntry,
+  clearAllCaches
+} = require('./common/helpers/node-cache');
 const { sendEmail, testEmail } = require('./common/helpers/nodemailer');
 const {
   insertDataCsv,
@@ -121,5 +127,8 @@ module.exports = {
   Response,
   // node-cache
   caches,
-  createCache
+  clearCache,
+  createCache,
+  removeCacheEntry,
+  clearAllCaches
 };
