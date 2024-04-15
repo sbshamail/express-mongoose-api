@@ -1,7 +1,6 @@
-const constants = require("../helpers/constants");
-const { Response } = require("../helpers/responseHandler");
-const { createAggregationPipeline } = require("./aggregation");
-
+const constants = require('../helpers/constants');
+const { Response } = require('../helpers/responseHandler');
+const { createAggregationPipeline, matchStageFilterize } = require('./aggregation');
 
 exports.listCommonAggregationFilterize = async (
   req,
@@ -80,6 +79,7 @@ exports.listAggregation = async (
     let page = req.query?.page ? parseInt(req.query?.page) : 1;
     page === 0 ? (page = 1) : (page = page);
     let skip = (page - 1) * limit;
+
     const pipeline = createAggregationPipeline({
       skip,
       limit,
@@ -93,7 +93,7 @@ exports.listAggregation = async (
     });
     let result = [];
     if (cache) {
-      result = await model.aggregate(pipeline).cache({ key, cache });
+      result = await model.aggregate(pipeline).cache({ key: cache });
     } else {
       result = await model.aggregate(pipeline);
     }
@@ -163,7 +163,7 @@ exports.listAggregationV2 = async ({
 
     let result = [];
     if (cache) {
-      result = await model.aggregate(pipeline).cache({ key, cache });
+      result = await model.aggregate(pipeline).cache({ key: cache });
     } else {
       result = await model.aggregate(pipeline);
     }
