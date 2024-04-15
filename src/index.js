@@ -1,47 +1,45 @@
 //controller -api
-const { removeMany } = require("./common/controller/remove");
-const { createApi } = require("./common/controller/create");
+const { removeMany } = require('./common/controller/remove');
+const { createApi } = require('./common/controller/create');
 const {
   updateApi,
   updateManyByIds,
-  softRemoveShowStatus,
+  // softRemoveShowStatus,
   updateManyRecords,
-  updateAddNewField
-} = require("./common/controller/update");
+  updateFieldAll
+  // updateAddNewField
+} = require('./common/controller/update');
 const {
   listCommonAggregationFilterize,
   listAggregation,
   listAggregationV2,
   aggregationByIds
-} = require("./common/controller/list");
-const { BulkWriteForFile } = require("./common/controller/bulkWrite");
+} = require('./common/controller/list');
+const { BulkWriteForFile } = require('./common/controller/bulkWrite');
 const {
   cloudinaryPushingFiles,
-  cloudinaryDeleteFiles,
-} = require("./common/controller/cloudinary");
+  cloudinaryDeleteFiles
+} = require('./common/controller/cloudinary');
 const {
   CreateFormidableHandler,
-  UpdateFormidableHandler,
-} = require("./common/controller/formidable");
+  UpdateFormidableHandler
+} = require('./common/controller/formidable');
 
 const {
   CreateHandleFilesGoogleDrive,
-  UpdateFilesHandleGoogleDrive,
-} = require("./common/controller/googleDrive/main");
+  UpdateFilesHandleGoogleDrive
+} = require('./common/controller/googleDrive/main');
 
 const {
   createAggregationPipeline,
   lookupUnwindStage,
-  lookupStage,
-} = require("./common/controller/aggregation");
+  lookupStage
+} = require('./common/controller/aggregation');
 //helper
-const constants = require("./common/helpers/constants");
-const { Response } = require("./common/helpers/responseHandler");
-const {
-  handleAsyncSession,
-  handleAsync,
-} = require("./common/helpers/handleAsync");
-const { handleError } = require("./common/helpers/errorHandler");
+const constants = require('./common/helpers/constants');
+const { Response } = require('./common/helpers/responseHandler');
+const { handleAsyncSession, handleAsync } = require('./common/helpers/handleAsync');
+const { handleError } = require('./common/helpers/errorHandler');
 const {
   isAllSameinArray,
   removeUndefined,
@@ -52,20 +50,28 @@ const {
   extractArrayItems,
   parseDate,
   consoled
-} = require("./common/helpers/reuseFunctions");
-const { caches, createCache } = require("./common/helpers/node-cache");
-const connectdb = require("./common/db/conn");
+} = require('./common/helpers/reuseFunctions');
+const { caches, createCache } = require('./common/helpers/node-cache');
+const { sendEmail, testEmail } = require('./common/helpers/nodemailer');
+const {
+  insertDataCsv,
+  pushDataCsv,
+  convertCsvToJson,
+  csvFileHandle
+} = require('./common/controller/csvFileImport');
+const connectdb = require('./common/db/conn');
 
 module.exports = {
   removeMany,
-  softRemoveShowStatus,
+  // softRemoveShowStatus,
   createApi,
   //update
+  updateFieldAll,
   updateApi,
   updateManyRecords,
   BulkWriteForFile,
   updateManyByIds,
-  updateAddNewField,
+  // updateAddNewField,
   //list
   listCommonAggregationFilterize,
   listAggregation,
@@ -83,6 +89,14 @@ module.exports = {
   createAggregationPipeline,
   lookupUnwindStage,
   lookupStage,
+  //nodemailer
+  sendEmail,
+  testEmail,
+  // csv File Handling
+  insertDataCsv,
+  pushDataCsv,
+  convertCsvToJson,
+  csvFileHandle,
   // helper functions
   constants,
   Response,
@@ -106,5 +120,5 @@ module.exports = {
   Response,
   // node-cache
   caches,
-  createCache,
+  createCache
 };
