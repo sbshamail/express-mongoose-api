@@ -10,6 +10,7 @@ const {
   flushcache
 } = require('./common/utils/cache');
 //redis connection
+const { redis } = require('./common/utils/redisconn');
 const {
   updateApi,
   updateManyByIds,
@@ -87,6 +88,7 @@ module.exports = {
   clearHash,
   flushcache,
   removeMany,
+  redis,
   // softRemoveShowStatus,
   createApi,
   //update
