@@ -3,7 +3,13 @@ const moment = require('moment');
 
 exports.removeUndefined = data => {
   for (let key in data) {
-    if (data[key] === undefined || data[key] === null || data[key] === '') {
+    if (
+      data[key] === undefined ||
+      data[key] === null ||
+      data[key] === '' ||
+      data[key] === 'null' ||
+      data[key] === 'undefined'
+    ) {
       delete data[key];
     }
   }
@@ -25,6 +31,13 @@ exports.isAllSameinArray = (dataArray, name) => {
 
   const firstElementName = name ?? dataArray[0];
   return dataArray.every(item => item === firstElementName);
+};
+exports.handleNumberValues = (fields, properties) => {
+  properties.forEach(property => {
+    if (fields[property]) {
+      fields[property] = Number(fields[property]);
+    }
+  });
 };
 
 // exampleCamelCaseString to 'Example Camel Case String'
@@ -55,6 +68,10 @@ exports.parseDate = dateString => {
     'DD-M-YYYY',
     'D-MM-YYYY',
     'D-M-YYYY',
+    'D-MMM-YY', // Added to handle dates like '5-Nov-22'
+    'DD-MMM-YY', // Handles two-digit day, abbreviated month, two-digit year
+    'D-MMM-YYYY', // Single-digit day, abbreviated month, four-digit year
+    'DD-MMM-YYYY' // Double-digit day, abbreviated month, four-digit year
 
     // 'MM/DD/YYYY',
     // 'M/D/YYYY',
@@ -64,13 +81,12 @@ exports.parseDate = dateString => {
 
   const parsedDate = moment(dateString, formats, true);
   if (!parsedDate.isValid()) {
-    console.log("Invalid Date Format");
-    return ""; // Return null if the date is invalid
+    console.log('Invalid Date Format');
+    return ''; // Return null if the date is invalid
   }
 
   return parsedDate.toDate();
 };
-
 
 exports.extractArrayItems = data =>
   Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value[0]]));
@@ -78,6 +94,12 @@ exports.extractArrayItems = data =>
 exports.consoled = (data, ...any) => {
   console.log(JSON.stringify(data, null, 2)); // Log the formatted JSON data
   any.forEach(arg => console.log(arg)); // Log each additional argument
+};
+
+// let input = "   Hello   world!   This is    a test.  ";
+// "Hello world! This is a test."
+exports.trimNameLower = name => {
+  return name.trim().replace(/\s+/g, ' ').toLowerCase();
 };
 // const oneValueAllowed = (value) => {
 //   if (value.processing) {

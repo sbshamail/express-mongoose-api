@@ -1,7 +1,7 @@
 const { Readable } = require('stream');
 const csvParser = require('csv-parser');
 const fs = require('fs');
-const { removeUndefined } = require('../helpers/reuseFunctions');
+const { removeUndefined, trimNameLower } = require('../helpers/reuseFunctions');
 const { Response } = require('../helpers/responseHandler');
 const formidable = require('formidable');
 
@@ -17,14 +17,28 @@ function convertCsvToJson(csvData) {
   });
 }
 
-const pushDataCsv = async ({ model, csvFilePath, branch, session }) => {
+const pushDataCsv = async ({ model, fileName, csvFilePath, branch, session }) => {
   const csvData = fs.readFileSync(csvFilePath, 'utf-8');
   try {
     const jsonData = await convertCsvToJson(csvData);
     // Additional validation on jsonData can go here
+
     jsonData.forEach(data => {
+      if (!data.id) {
+        throw new Error(`Unique id is not found`);
+      }
       removeUndefined(data);
       data.branch = branch;
+      data.id = data.id;
+      data.fullName = trimNameLower(data.fullName) + ' (khi)';
+      if (data.phone) {
+        data.phone = '0' + data.phone;
+      }
+      data.bulkImportDetail = {
+        date: new Date(),
+        title: fileName + ' ' + data.id
+      };
+      console.log(`${data.id} on Working, ${data.fullName}`);
     });
 
     // Start the transaction
@@ -36,7 +50,7 @@ const pushDataCsv = async ({ model, csvFilePath, branch, session }) => {
   }
 };
 
-const insertDataCsv = async ({ req, res, model }) => {
+const insertDataCsv = async ({ req, res, model, fileName }) => {
   const branch = req.user.branch._id;
   const form = new formidable.IncomingForm();
 
@@ -62,17 +76,16 @@ const insertDataCsv = async ({ req, res, model }) => {
       session.startTransaction();
       try {
         // Now, pass the session to pushDataCsv
-        const data = await pushDataCsv({ model, csvFilePath, branch, session });
+        const data = await pushDataCsv({ model, fileName, csvFilePath, branch, session });
         await session.commitTransaction();
         session.endSession();
 
-        return Response(res, 200,"ok", data,data.length);
+        return Response(res, 200, 'ok', data, data.length);
       } catch (error) {
         await session.abortTransaction();
         session.endSession();
         Response(res, 400, error.message);
-      }
-      finally {
+      } finally {
         // End the session
         if (session) {
           session.endSession();

@@ -1,6 +1,10 @@
 const constants = require('../helpers/constants');
 const { Response } = require('../helpers/responseHandler');
-const { createAggregationPipeline, matchStageFilterize } = require('./aggregation');
+const {
+  createAggregationPipeline,
+  createAggregationPipelineV2,
+  matchStageFilterize
+} = require('./aggregation');
 
 exports.listCommonAggregationFilterize = async (
   req,
@@ -66,10 +70,10 @@ exports.listAggregation = async (
   try {
     const { searchTerm, sortField, columnFilters, deleted } = req.query;
     const { branch } = req.user;
-
     if (!branch || !branch._id) {
       return;
     }
+    console.log('branch', branch.name, branch._id, 'name', req.user.username);
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
     if (columnFilters) {
@@ -99,6 +103,7 @@ exports.listAggregation = async (
     }
 
     const total = result.length > 0 ? result[0].total : 0;
+
     const data = result.length > 0 ? result[0].data : [];
     const dataWithRowNumbers = addRowNumbers(data, page, limit);
 
@@ -134,7 +139,7 @@ exports.listAggregationV2 = async ({
     if (columnFilters) {
       columnFiltersArray = JSON.parse(columnFilters);
     }
-    console.log(columnFiltersArray);
+    // console.log(columnFiltersArray);
     let limit = req.query?.limit ? parseInt(req.query?.limit) : 20;
     let page = req.query?.page ? parseInt(req.query?.page) : 1;
     page === 0 ? (page = 1) : (page = page);
@@ -150,7 +155,9 @@ exports.listAggregationV2 = async ({
       numericSearchTerms,
       matchStage
     });
-
+    // let aggregationPipeline = createAggregationPipeline
+    //   ? createAggregationPipeline
+    //   : createAggregationPipelineV2;
     const pipeline = createAggregationPipeline({
       skip,
       limit,
@@ -164,6 +171,7 @@ exports.listAggregationV2 = async ({
     let result = [];
     if (cache) {
       result = await model.aggregate(pipeline).cache({ key: cache });
+      // .cache({ key: cache });
     } else {
       result = await model.aggregate(pipeline);
     }

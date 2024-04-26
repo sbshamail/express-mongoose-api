@@ -1,7 +1,15 @@
 //controller -api
 const { removeMany } = require('./common/controller/remove');
 const { createApi } = require('./common/controller/create');
-
+//utils
+//redisCache
+const {
+  mongooseAggregationQuery,
+  mongooseQuery,
+  clearHash,
+  flushcache
+} = require('./common/utils/cache');
+//redis connection
 const {
   updateApi,
   updateManyByIds,
@@ -34,6 +42,7 @@ const {
 const {
   createAggregationPipeline,
   lookupUnwindStage,
+  createAggregationPipelineV2,
   lookupStage
 } = require('./common/controller/aggregation');
 //helper
@@ -50,7 +59,9 @@ const {
   onlyIntegerAllowed,
   extractArrayItems,
   parseDate,
-  consoled
+  trimNameLower,
+  consoled,
+  handleNumberValues
 } = require('./common/helpers/reuseFunctions');
 const {
   caches,
@@ -69,6 +80,12 @@ const {
 const connectdb = require('./common/db/conn');
 
 module.exports = {
+  //utils
+  //redis
+  mongooseAggregationQuery,
+  mongooseQuery,
+  clearHash,
+  flushcache,
   removeMany,
   // softRemoveShowStatus,
   createApi,
@@ -94,6 +111,7 @@ module.exports = {
   UpdateFilesHandleGoogleDrive,
   // aggregation
   createAggregationPipeline,
+  createAggregationPipelineV2,
   lookupUnwindStage,
   lookupStage,
   //nodemailer
@@ -115,6 +133,7 @@ module.exports = {
   //handle error
   handleError,
   //reuse function
+  trimNameLower,
   isAllSameinArray,
   removeUndefined,
   IsArray,
@@ -123,6 +142,7 @@ module.exports = {
   onlyIntegerAllowed,
   extractArrayItems,
   consoled,
+  handleNumberValues,
   parseDate,
   Response,
   // node-cache
