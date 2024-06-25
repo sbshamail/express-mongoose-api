@@ -1,7 +1,7 @@
 const { Readable } = require('stream');
 const csvParser = require('csv-parser');
 const fs = require('fs');
-const { removeUndefined } = require('../helpers/reuseFunctions');
+const { removeUndefined, trimNameLower } = require('../helpers/reuseFunctions');
 const { Response } = require('../helpers/responseHandler');
 const formidable = require('formidable');
 
@@ -17,29 +17,15 @@ function convertCsvToJson(csvData) {
   });
 }
 
-const pushDataCsv = async ({ model, csvFilePath, branch, session }) => {
-  const csvData = fs.readFileSync(csvFilePath, 'utf-8');
-  try {
-    const jsonData = await convertCsvToJson(csvData);
-    // Additional validation on jsonData can go here
-    jsonData.forEach(data => {
-      removeUndefined(data);
-      data.branch = branch;
-    });
-
-    // Start the transaction
-    const result = await model.insertMany(jsonData, { session: session });
-
-    return result;
-  } catch (error) {
-    throw new Error(`Failed to process CSV data: ${error}`);
-  }
-};
+async function fetchExistingImportIds(importIds, model) {
+  const existingRecords = await model
+    .find({ importId: { $in: importIds } }, { importId: 1 })
+    .lean();
+  return new Set(existingRecords.map(record => record.importId));
+}
 
 const insertDataCsv = async ({ req, res, model }) => {
-  const branch = req.user.branch._id;
   const form = new formidable.IncomingForm();
-
   return new Promise((resolve, reject) => {
     form.parse(req, async (err, fields, files) => {
       if (err) {
@@ -48,7 +34,7 @@ const insertDataCsv = async ({ req, res, model }) => {
       if (!files?.file?.length) {
         return reject('No files uploaded');
       }
-
+      const title = fields.title ? fields?.title[0] : undefined;
       const csvFilePath = files.file[0].filepath;
       const fileType = files.file[0].mimetype; // Get the MIME type of the file
 
@@ -58,25 +44,19 @@ const insertDataCsv = async ({ req, res, model }) => {
         // return reject('Invalid file format');
         return Response(res, 400, 'Invalid file format. Only CSV files are accepted.');
       }
-      const session = await model.startSession();
-      session.startTransaction();
-      try {
-        // Now, pass the session to pushDataCsv
-        const data = await pushDataCsv({ model, csvFilePath, branch, session });
-        await session.commitTransaction();
-        session.endSession();
 
-        return Response(res, 200,"ok", data,data.length);
+      try {
+        const csvData = fs.readFileSync(csvFilePath, 'utf-8');
+        const jsonData = await convertCsvToJson(csvData);
+
+        // filtering already inserting importId
+        const allImportIds = jsonData.map(item => item.id);
+        const existingImportIds = await fetchExistingImportIds(allImportIds, model);
+        const filteredData = jsonData.filter(item => !existingImportIds.has(item.id));
+        resolve({ filteredData, title }); // Successfully resolve with the result
       } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
         Response(res, 400, error.message);
-      }
-      finally {
-        // End the session
-        if (session) {
-          session.endSession();
-        }
+        reject(error.message); // Reject with the error message
       }
     });
   });
@@ -100,21 +80,6 @@ const csvFileHandle = async ({ csvFilePath, fileType, res }) => {
 
 module.exports = {
   insertDataCsv,
-  pushDataCsv,
   convertCsvToJson,
   csvFileHandle
 };
-
-// const insertDataCsv = async ({req, res,model}) => {
-//   const branch = req.user.branch._id;
-//   let form = new formidable.IncomingForm();
-//   form.parse(req, async (err, fields, files) => {
-//     if (err) {
-//       return Response(res, 400, 'all fields required');
-//     }
-//     // @ts-ignore
-//     const csvFilePath = files?.file[0].filepath;
-//     const data = await pushDataCsv({ model, csvFilePath, branch });
-//     return data;
-//   });
-// }

@@ -1,30 +1,31 @@
-const { removeUndefined } = require("../helpers/reuseFunctions");
-const { Response } = require("../helpers/responseHandler");
-const constants = require("../helpers/constants");
+const { removeUndefined } = require('../helpers/reuseFunctions');
+const { Response } = require('../helpers/responseHandler');
+const constants = require('../helpers/constants');
 
 exports.updateApi = async (model, id, data, options = {}) => {
   removeUndefined(data);
   const response = await model.findByIdAndUpdate(id, data, {
     new: true,
-    ...options  // Spread the options object here
+    ...options // Spread the options object here
+  });
+  return response;
+};
+exports.updateOnly = async (model, id, data, options = {}) => {
+  removeUndefined(data);
+  const response = await model.updateOne({ _id: id }, data, {
+    new: true,
+    ...options // Spread the options object here
   });
   return response;
 };
 
-exports.updateManyRecords = async ({
-  model,
-  ids,
-  condition,
-  value,
-  session,
-}) => {
+exports.updateManyRecords = async (model, ids, data, options = {}) => {
   return await model.updateMany(
     { _id: { $in: ids } },
-    { [condition]: value },
-    { session }
+    data,
+    { ...options, new: true } // Merge options with new:true
   );
 };
-
 /**
  * @param {Object} args
  * @param {import('express').Request} args.req
@@ -36,13 +37,13 @@ exports.updateManyByIds = async ({ req, res, model }) => {
     const data = req.body;
     const { ids, ...updateData } = data;
     if (!updateData) {
-      return Response(res, 400, "No data Found For Update");
+      return Response(res, 400, 'No data Found For Update');
     }
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return Response(res, 400, "Not Found Ids");
+      return Response(res, 400, 'Not Found Ids');
     }
     const response = await model.updateMany({ _id: { $in: ids } }, updateData, {
-      new: true,
+      new: true
     });
     return response;
   } catch (error) {

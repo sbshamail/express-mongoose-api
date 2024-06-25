@@ -1,13 +1,13 @@
-const { google } = require("googleapis");
+const { google } = require('googleapis');
 
-const { Response } = require("../../helpers/responseHandler");
+const { Response } = require('../../helpers/responseHandler');
 
 // const apikeys = require("../../../../../apikeys.json");
-const SCOPE = ["https://www.googleapis.com/auth/drive"];
+const SCOPE = ['https://www.googleapis.com/auth/drive'];
 const {
   uploadFilesToGoogleDrive,
-  removeFilesFromGoogleDrive,
-} = require("./googleDriveFunction");
+  removeFilesFromGoogleDrive
+} = require('./googleDriveFunction');
 
 // A Function that can provide access to google drive api
 async function authorize() {
@@ -42,16 +42,12 @@ exports.CreateHandleFilesGoogleDrive = async (req, res, model, data) => {
     const authClient = await authorize();
     let googleDriveResponses = [];
     if (files && files.length > 0) {
-      googleDriveResponses = await uploadFilesToGoogleDrive(
-        authClient,
-        files,
-        foldering
-      );
+      googleDriveResponses = await uploadFilesToGoogleDrive(authClient, files, foldering);
     }
 
     const newData = {
       ...data,
-      files: googleDriveResponses,
+      files: googleDriveResponses
     };
     return newData;
   } catch (error) {
@@ -78,11 +74,7 @@ exports.UpdateFilesHandleGoogleDrive = async (req, res, model, data) => {
     const authClient = await authorize();
     let googleDriveResponses = [];
     if (files && files.length > 0) {
-      googleDriveResponses = await uploadFilesToGoogleDrive(
-        authClient,
-        files,
-        foldering
-      );
+      googleDriveResponses = await uploadFilesToGoogleDrive(authClient, files, foldering);
     }
 
     let deletedFiles;
@@ -96,16 +88,80 @@ exports.UpdateFilesHandleGoogleDrive = async (req, res, model, data) => {
       // if (!deleteFilesResponse) {
       //   return Response(res, 400, "deleted Files not Found");
       // }
-     data.deletedFiles = deletedFiles;
+      data.deletedFiles = deletedFiles;
     }
 
     const newData = {
       data,
-      files: googleDriveResponses,
+      files: googleDriveResponses
     };
 
     return newData;
   } catch (error) {
     return Response(res, 400, error.message);
+  }
+};
+
+exports.CreateHandleFilesGoogleDriveV2 = async (files, foldering) => {
+  if (!files && !foldering) {
+    return {
+      isValid: false,
+      message: 'Missing files or folders'
+    };
+  }
+  try {
+    // Upload files to Google Drive
+    const authClient = await authorize();
+    let googleDriveResponses = [];
+    if (files && files.length > 0) {
+      googleDriveResponses = await uploadFilesToGoogleDrive(authClient, files, foldering);
+    }
+    return googleDriveResponses;
+  } catch (error) {
+    // console.error(error.message);
+    return {
+      isValid: false,
+      message: error.message
+    };
+  }
+};
+
+exports.UpdateFilesHandleGoogleDriveV2 = async (files, foldering, deletedFiles) => {
+  // allowed files is int schema methods check the allowed files
+  // if (files && files.length > 0 && model.allowedFiles) {
+  //   try {
+  //     model.allowedFiles(files);
+  //   } catch (error) {
+  //     // console.error(error.message);
+  //     return Response(res, 400, error.message);
+  //   }
+  // }
+  try {
+    // Upload files to Google Drive
+    const authClient = await authorize();
+    let googleDriveFiles = [];
+    if (files && files.length > 0) {
+      googleDriveFiles = await uploadFilesToGoogleDrive(authClient, files, foldering);
+    }
+    let filesDeleted = undefined;
+    if (deletedFiles && deletedFiles.length > 0) {
+      // deletedFiles = JSON.parse(data.deletedFiles);
+      const deleteFilesResponse = await removeFilesFromGoogleDrive(
+        authClient,
+        deletedFiles
+      );
+      // console.log("deleteFilesResponse",deleteFilesResponse)
+      // if (!deleteFilesResponse) {
+      //   return Response(res, 400, "deleted Files not Found");
+      // }
+      filesDeleted = deletedFiles;
+    }
+
+    return { googleDriveFiles, filesDeleted };
+  } catch (error) {
+    return {
+      isValid: false,
+      message: error.message
+    };
   }
 };

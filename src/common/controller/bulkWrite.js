@@ -20,29 +20,29 @@ exports.BulkWriteForFile = async ({
   fileId,
   deletedFiles,
   model,
-  session,
+  session
 }) => {
   const hasFilesToAdd = files && files.length > 0;
   const hasFilesToDelete = deletedFiles && deletedFiles.length > 0;
-  
+
   const validId = new mongoose.Types.ObjectId(id);
-  
+
   const updateOperations = [];
 
   // Always update the main data
   updateOperations.push({
     updateOne: {
       filter: { _id: validId },
-      update: { $set: data },
-    },
+      update: { $set: data }
+    }
   });
   // Add files if necessary
   if (hasFilesToAdd) {
     updateOperations.push({
       updateOne: {
         filter: { _id: validId },
-        update: { $addToSet: { files: { $each: files } } }, // Directly using files
-      },
+        update: { $addToSet: { files: { $each: files } } } // Directly using files
+      }
     });
   }
 
@@ -51,8 +51,8 @@ exports.BulkWriteForFile = async ({
     updateOperations.push({
       updateOne: {
         filter: { _id: validId },
-        update: { $pull: { files: { [fileId]: { $in: deletedFiles } } } },
-      },
+        update: { $pull: { files: { [fileId]: { $in: deletedFiles } } } }
+      }
     });
   }
 
@@ -60,9 +60,6 @@ exports.BulkWriteForFile = async ({
   if (session) {
     bulkWriteOptions.session = session;
   }
-  const bulkResponse = await model.bulkWrite(
-    updateOperations,
-    bulkWriteOptions
-  );
+  const bulkResponse = await model.bulkWrite(updateOperations, bulkWriteOptions);
   return bulkResponse;
 };

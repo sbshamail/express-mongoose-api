@@ -1,9 +1,16 @@
 //controller -api
-const { removeMany } = require('./common/controller/remove');
+const {
+  removeMany,
+  removedMany,
+  removedStatus,
+  removedStatusNext,
+  removedManyNext
+} = require('./common/controller/remove');
 const { createApi } = require('./common/controller/create');
 
 const {
   updateApi,
+  updateOnly,
   updateManyByIds,
   // softRemoveShowStatus,
   updateManyRecords,
@@ -13,7 +20,6 @@ const {
 const {
   listCommonAggregationFilterize,
   listAggregation,
-  listAggregationV2,
   aggregationByIds
 } = require('./common/controller/list');
 const { BulkWriteForFile } = require('./common/controller/bulkWrite');
@@ -28,7 +34,9 @@ const {
 
 const {
   CreateHandleFilesGoogleDrive,
-  UpdateFilesHandleGoogleDrive
+  UpdateFilesHandleGoogleDrive,
+  CreateHandleFilesGoogleDriveV2,
+  UpdateFilesHandleGoogleDriveV2
 } = require('./common/controller/googleDrive/main');
 
 const {
@@ -39,7 +47,11 @@ const {
 //helper
 const constants = require('./common/helpers/constants');
 const { Response } = require('./common/helpers/responseHandler');
-const { handleAsyncSession, handleAsync } = require('./common/helpers/handleAsync');
+const {
+  handleAsyncSession,
+  handleAsync,
+  handleFormAsyncSession
+} = require('./common/helpers/handleAsync');
 const { handleError } = require('./common/helpers/errorHandler');
 const {
   isAllSameinArray,
@@ -50,7 +62,11 @@ const {
   onlyIntegerAllowed,
   extractArrayItems,
   parseDate,
-  consoled
+  trimNameLower,
+  consoled,
+  handleNumberValues,
+  parseJsonFields,
+  pickObj
 } = require('./common/helpers/reuseFunctions');
 const {
   caches,
@@ -62,19 +78,24 @@ const {
 const { sendEmail, testEmail } = require('./common/helpers/nodemailer');
 const {
   insertDataCsv,
-  pushDataCsv,
   convertCsvToJson,
   csvFileHandle
 } = require('./common/controller/csvFileImport');
 const connectdb = require('./common/db/conn');
 
 module.exports = {
+  //remove
   removeMany,
+  removedStatus,
+  removedStatusNext,
+  removedManyNext,
+  removedMany,
   // softRemoveShowStatus,
   createApi,
   //update
   updateFieldAll,
   updateApi,
+  updateOnly,
   updateManyRecords,
   BulkWriteForFile,
   updateManyByIds,
@@ -82,7 +103,6 @@ module.exports = {
   //list
   listCommonAggregationFilterize,
   listAggregation,
-  listAggregationV2,
   aggregationByIds,
   // cloudinary
   cloudinaryPushingFiles,
@@ -92,6 +112,8 @@ module.exports = {
   //googledrive
   CreateHandleFilesGoogleDrive,
   UpdateFilesHandleGoogleDrive,
+  CreateHandleFilesGoogleDriveV2,
+  UpdateFilesHandleGoogleDriveV2,
   // aggregation
   createAggregationPipeline,
   lookupUnwindStage,
@@ -101,7 +123,6 @@ module.exports = {
   testEmail,
   // csv File Handling
   insertDataCsv,
-  pushDataCsv,
   convertCsvToJson,
   csvFileHandle,
   // helper functions
@@ -110,11 +131,14 @@ module.exports = {
   //handle async
   handleAsyncSession,
   handleAsync,
+  handleFormAsyncSession,
   // db
   connectdb,
   //handle error
   handleError,
   //reuse function
+  pickObj,
+  trimNameLower,
   isAllSameinArray,
   removeUndefined,
   IsArray,
@@ -123,7 +147,9 @@ module.exports = {
   onlyIntegerAllowed,
   extractArrayItems,
   consoled,
+  handleNumberValues,
   parseDate,
+  parseJsonFields,
   Response,
   // node-cache
   caches,

@@ -1,6 +1,6 @@
 const constants = require('../helpers/constants');
 const { Response } = require('../helpers/responseHandler');
-const { createAggregationPipeline, matchStageFilterize } = require('./aggregation');
+const { createAggregationPipeline } = require('./aggregation');
 
 exports.listCommonAggregationFilterize = async (
   req,
@@ -49,10 +49,12 @@ exports.listCommonAggregationFilterize = async (
 };
 
 function addRowNumbers(data, pageNumber, pageSize) {
-  return data.map((item, index) => ({
-    ...item,
-    rowNum: (pageNumber - 1) * pageSize + index + 1
-  }));
+  return data.map((item, index) => {
+    return {
+      ...item,
+      rowNum: (pageNumber - 1) * pageSize + index + 1
+    };
+  });
 }
 
 exports.listAggregation = async (
@@ -64,18 +66,28 @@ exports.listAggregation = async (
   cache
 ) => {
   try {
-    const { searchTerm, sortField, columnFilters, deleted } = req.query;
+    const { searchTerm, sortField, columnFilters, columnFiltersOr, deleted } =
+      req.query || {};
+    // console.log(columnFiltersOr);
+    customParams.fromDate = req.query.fromDate;
+    customParams.toDate = req.query.toDate;
+    customParams.fieldDate = req.query.fieldDate;
     const { branch } = req.user;
-
     if (!branch || !branch._id) {
       return;
     }
+
+    // console.log('branch', branch.name, branch._id, 'name', req.user.username);
     let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
     let columnFiltersArray = [];
+    let columnFiltersOrArray = [];
     if (columnFilters) {
       columnFiltersArray = JSON.parse(columnFilters);
     }
-    let limit = req.query?.limit ? parseInt(req.query?.limit) : 20;
+    if (columnFiltersOr) {
+      columnFiltersOrArray = JSON.parse(columnFiltersOr);
+    }
+    let limit = req.query?.limit ? parseInt(req.query?.limit) : 1000;
     let page = req.query?.page ? parseInt(req.query?.page) : 1;
     page === 0 ? (page = 1) : (page = page);
     let skip = (page - 1) * limit;
@@ -87,6 +99,7 @@ exports.listAggregation = async (
       sortField: sortField ? sortField : 'createdAt',
       sortOrder: sortOrder ? sortOrder : -1,
       columnFilters: columnFiltersArray,
+      columnFiltersOr: columnFiltersOrArray,
       deleted,
       customParams,
       branch: branch._id
@@ -99,81 +112,13 @@ exports.listAggregation = async (
     }
 
     const total = result.length > 0 ? result[0].total : 0;
+    const extra = result.length > 0 ? result[0].extra : 0;
     const data = result.length > 0 ? result[0].data : [];
     const dataWithRowNumbers = addRowNumbers(data, page, limit);
 
     return {
       total: total,
-      data: dataWithRowNumbers
-    };
-    // return { total, data }
-  } catch (error) {
-    console.log(model.modelName, error);
-    Response(res, 400, constants.GET_ERROR);
-  }
-};
-
-exports.listAggregationV2 = async ({
-  req,
-  res,
-  model,
-  createAggregationPipeline,
-  customParams,
-  cache
-}) => {
-  try {
-    const { searchTerm, sortField, columnFilters, deleted } = req.query;
-    const { branch } = req.user;
-    const { searchTerms = [], numericSearchTerms = [] } = customParams || {};
-
-    if (!branch || !branch._id) {
-      return;
-    }
-    let sortOrder = req.query?.sortOrder ? parseInt(req.query?.sortOrder) : -1;
-    let columnFiltersArray = [];
-    if (columnFilters) {
-      columnFiltersArray = JSON.parse(columnFilters);
-    }
-    console.log(columnFiltersArray);
-    let limit = req.query?.limit ? parseInt(req.query?.limit) : 20;
-    let page = req.query?.page ? parseInt(req.query?.page) : 1;
-    page === 0 ? (page = 1) : (page = page);
-    let skip = (page - 1) * limit;
-
-    let matchStage = {};
-    matchStage = matchStageFilterize({
-      searchTerm,
-      branch: branch._id,
-      columnFilters: columnFiltersArray,
-      deleted,
-      searchTerms,
-      numericSearchTerms,
-      matchStage
-    });
-
-    const pipeline = createAggregationPipeline({
-      skip,
-      limit,
-      sortField: sortField ? sortField : 'createdAt',
-      sortOrder: sortOrder ? sortOrder : -1,
-      customParams,
-      matchStage,
-      branch: branch._id
-    });
-
-    let result = [];
-    if (cache) {
-      result = await model.aggregate(pipeline).cache({ key: cache });
-    } else {
-      result = await model.aggregate(pipeline);
-    }
-
-    const total = result.length > 0 ? result[0].total : 0;
-    const data = result.length > 0 ? result[0].data : [];
-    const dataWithRowNumbers = addRowNumbers(data, page, limit);
-
-    return {
-      total: total,
+      extra: extra,
       data: dataWithRowNumbers
     };
     // return { total, data }
@@ -191,7 +136,7 @@ exports.listAggregationV2 = async ({
  * @param {Object} options.ids
  * @param {Function} [options.ownPipeline] - Optional MongoDB session.
  * @param {Request} options.req - Optional MongoDB session.
- * @param {Function} [options.session]
+ * @param {Object} [options.session]
  * @returns {Promise<Object>}
  */
 
